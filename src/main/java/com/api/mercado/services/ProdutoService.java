@@ -44,7 +44,7 @@ public class ProdutoService {
     }
 
     public Page<Produto> listarProdutosDisponiveis(Pageable paginacao) {
-        return produtoRepository.findAllByDisponibilidadeTrue(paginacao);
+        return produtoRepository.findAllByAtivoTrue(paginacao);
     }
 
     // public List<Produto> listarProdutosDisponiveisOrdenadosPorNome() {

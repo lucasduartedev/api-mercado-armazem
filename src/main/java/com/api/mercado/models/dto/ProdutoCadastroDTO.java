@@ -18,7 +18,10 @@ public record ProdutoCadastroDTO(
     String descricao,
 
     @Min(value = 1, message = "Valor mínido de 1")
-    Integer quantidade
+    Integer estoque,
+
+    @NotBlank
+    String categoria
 
 ) {
     

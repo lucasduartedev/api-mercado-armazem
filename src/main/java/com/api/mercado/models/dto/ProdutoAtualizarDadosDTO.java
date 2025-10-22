@@ -8,7 +8,8 @@ public record ProdutoAtualizarDadosDTO(
     String nome,
     Double preco,
     String descricao,
-    Integer quantidade
+    Integer estoque,
+    String categoria
 ) {
     
 }

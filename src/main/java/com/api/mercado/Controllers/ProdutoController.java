@@ -35,12 +35,6 @@ public class ProdutoController {
         this.produtoService = produtoService;
     }
 
-    // @PostMapping
-    // @Transactional
-    // public void cadastrarProduto(@RequestBody ProdutoCadastroDTO dados) {
-    //     produtoService.cadastrarProduto(new Produto(dados));
-    // }
-
     @PostMapping
     @Transactional
     public ResponseEntity<Produto> cadastrarproduto(@RequestBody @Valid ProdutoCadastroDTO dados) {
@@ -48,11 +42,6 @@ public class ProdutoController {
         produtoService.cadastrarProduto(produto);
         return ResponseEntity.status(HttpStatus.CREATED).body(produto);
     }
-    
-    // @GetMapping
-    // public Page<ProdutoListagemDTO> listarProdutos(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
-    //     return produtoService.listarProdutosDisponiveis(paginacao).map(ProdutoListagemDTO::new);
-    // }
 
     @GetMapping
     public ResponseEntity<Page<ProdutoListagemDTO>> listarTodosProdutos(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
@@ -60,12 +49,7 @@ public class ProdutoController {
         Page<ProdutoListagemDTO> dados = produtos.map(ProdutoListagemDTO::new);
         return ResponseEntity.ok(dados);
     }
-
-    // @GetMapping("/{id}")
-    // public Optional<Produto> burcarProdutoPorId(@PathVariable Long id) {
-    //     return produtoService.buscarPorId2(id);
-    // }
-        
+    
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Long id) {
         Optional<Produto> produto = produtoService.buscarPorId2(id);
@@ -73,27 +57,25 @@ public class ProdutoController {
                     .orElse(ResponseEntity.notFound().build());
     }
 
-    // @PutMapping
-    // @Transactional
-    // public void atualizarProduto(@RequestBody @Valid ProdutoAtualizarDadosDTO dados) {
-    //     var produto = produtoService.buscarPorId(dados.id());
-    //     produto.atualizarInformacoes(dados);
-    // }
-
     @PutMapping
     @Transactional
     public ResponseEntity<Void> atualizarProduto(@RequestBody @Valid ProdutoAtualizarDadosDTO dados) {
         var produto = produtoService.buscarPorId(dados.id());
-        produto.atualizarInformacoes(dados);
-        return ResponseEntity.ok().build();
+        try {
+            produto.atualizarInformacoes(dados);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // @DeleteMapping("/{id}")
-    // @Transactional
-    // public void excluirProduto(@PathVariable Long id) {
-    //     var produto = produtoService.buscarPorId(id);
-    //     produto.exclusaoLogica();
-    // }
+    @PutMapping("/{id}/ativar")
+    @Transactional
+    public ResponseEntity<Void> ativarProduto(@PathVariable Long id) {
+        var produto = produtoService.buscarPorId(id);
+        produto.ativarProduto();
+        return ResponseEntity.ok().build();
+    }
 
     @DeleteMapping("/{id}")
     @Transactional

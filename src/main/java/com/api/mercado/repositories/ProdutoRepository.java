@@ -12,7 +12,7 @@ import com.api.mercado.models.Produto;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long>{
     
-    Page<Produto> findAllByDisponibilidadeTrue(Pageable pageable);
+    Page<Produto> findAllByAtivoTrue(Pageable pageable);
 
     // List<Produto> findAllByDisponibilidadeTrueOrderByNomeAsc();
     

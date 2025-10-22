@@ -1,8 +1,11 @@
 package com.api.mercado.models;
 
+import java.time.LocalDateTime;
+
 import com.api.mercado.models.dto.ProdutoAtualizarDadosDTO;
 import com.api.mercado.models.dto.ProdutoCadastroDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +25,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "id")
 public class Produto {
 
     @Id
@@ -31,14 +34,18 @@ public class Produto {
     private String nome;
     private Double preco;
     private String descricao;
-    private Integer quantidade;
-    private Boolean disponibilidade = true;
+    private Integer estoque;
+    private String categoria;
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro = LocalDateTime.now();
+    private Boolean ativo = true;
 
     public Produto(ProdutoCadastroDTO dados) {
         this.nome = dados.nome();
         this.preco = dados.preco();
         this.descricao = dados.descricao();
-        this.quantidade = dados.quantidade();
+        this.estoque = dados.estoque();
+        this.categoria = dados.categoria();
     }
 
     public void atualizarInformacoes(ProdutoAtualizarDadosDTO dados) {
@@ -51,13 +58,25 @@ public class Produto {
         if(dados.descricao() != null) {
             this.descricao = dados.descricao();
         }
-        if(dados.quantidade() != null) {
-            this.quantidade = dados.quantidade();
+        if(dados.estoque() != null) {
+            this.estoque = dados.estoque();
+        }
+        if(dados.categoria() != null) {
+            this.categoria = dados.categoria();
         }
     }
 
+    public void alternarStatusAtivo() {
+        this.ativo = !this.ativo;
+    }
+
+    public void ativarProduto() {
+        this.ativo = true;
+    }
+
+    // * Evitar exclusão permanente na base de dados
     public void exclusaoLogica() {
-        this.disponibilidade = false;
+        this.ativo = false;
     }
 
 }
