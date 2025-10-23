@@ -1,12 +1,14 @@
 package com.api.mercado.models;
 
+import java.time.LocalDateTime;
+
+import com.api.mercado.models.dto.ClienteAtualizarDadosDTO;
+import com.api.mercado.models.dto.ClienteDadosCadastroDTO;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,13 +19,46 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
-public class Cliente {
+public class Cliente extends Pessoa {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro = LocalDateTime.now();
 
-    private String nome;
-    
+    // * Constructors
+    public Cliente(ClienteDadosCadastroDTO dados) {
+        super(
+            dados.nome(),
+            dados.cpf(),
+            dados.cep(),
+            dados.logradouro(),
+            dados.numero(),
+            dados.telefone(),
+            dados.email()
+        );
+    }
+
+    public void atualizarInformacoes(ClienteAtualizarDadosDTO dados) {
+        if(dados.nome() != null) {
+            this.setNome(dados.nome());
+        }
+        if(dados.cpf() != null) {
+            this.setCpf(dados.cpf());
+        }
+        if(dados.cep() != null) {
+            this.getEndereco().setCep(dados.cep());
+        }
+        if(dados.logradouro() != null) {
+            this.getEndereco().setLogradouro(dados.logradouro());
+        }
+        if(dados.numero() != null) {
+            this.getEndereco().setNumero(dados.numero());
+        }
+        if(dados.telefone() != null) {
+            this.getContato().setTelefone(dados.telefone());
+        }
+        if(dados.email() != null) {
+            this.getContato().setEmail(dados.email());
+        }
+    }
+
 }
