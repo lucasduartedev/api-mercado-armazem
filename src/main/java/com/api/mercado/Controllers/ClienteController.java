@@ -70,6 +70,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
         var cliente = clienteService.buscarClientePorId(id);
         cliente.exclusaoLogica();
