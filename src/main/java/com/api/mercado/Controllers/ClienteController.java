@@ -73,8 +73,7 @@ public class ClienteController {
     @Transactional
     public ResponseEntity<Void> ativarCliente(@PathVariable Long id) {
         var cliente = clienteService.buscarClientePorId(id);
-        cliente.ativarPessoa();
-        // ! cliente.ativarCliente();
+        cliente.ativarCliente();
         return ResponseEntity.ok().build();
     }
 

@@ -70,4 +70,8 @@ public class Funcionario extends Pessoa{
         }
     }
 
+    public void ativarFuncionario() {
+        super.setAtivo(true);
+    }
+
 }

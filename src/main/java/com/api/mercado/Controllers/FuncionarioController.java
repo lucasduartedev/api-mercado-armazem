@@ -73,7 +73,7 @@ public class FuncionarioController {
     @Transactional
     public ResponseEntity<Void> ativarFuncionario(@PathVariable Long id) {
         var funcionario = funcionarioService.buscarFuncionarioPorId(id);
-        funcionario.ativarPessoa();
+        funcionario.ativarFuncionario();
         return ResponseEntity.ok().build();
     }
 

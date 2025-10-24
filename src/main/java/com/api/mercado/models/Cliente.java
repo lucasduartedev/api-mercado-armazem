@@ -61,4 +61,8 @@ public class Cliente extends Pessoa {
         }
     }
 
+    public void ativarCliente() {
+        super.setAtivo(true);
+    }
+
 }
