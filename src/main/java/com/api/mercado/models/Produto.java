@@ -2,8 +2,8 @@ package com.api.mercado.models;
 
 import java.time.LocalDateTime;
 
-import com.api.mercado.models.dto.ProdutoAtualizarDadosDTO;
-import com.api.mercado.models.dto.ProdutoCadastroDTO;
+import com.api.mercado.dto.ProdutoAtualizarDadosDTO;
+import com.api.mercado.dto.ProdutoCadastroDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

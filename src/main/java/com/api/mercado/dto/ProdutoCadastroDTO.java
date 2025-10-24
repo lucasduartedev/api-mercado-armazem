@@ -1,4 +1,4 @@
-package com.api.mercado.models.dto;
+package com.api.mercado.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

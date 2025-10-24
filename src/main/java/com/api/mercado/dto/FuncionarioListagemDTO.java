@@ -1,4 +1,4 @@
-package com.api.mercado.models.dto;
+package com.api.mercado.dto;
 
 import com.api.mercado.models.Funcionario;
 

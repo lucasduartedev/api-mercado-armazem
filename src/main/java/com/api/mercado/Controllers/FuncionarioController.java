@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.mercado.dto.FuncionarioAtualizarDadosDTO;
+import com.api.mercado.dto.FuncionarioDadosCadastroDTO;
+import com.api.mercado.dto.FuncionarioListagemDTO;
 import com.api.mercado.models.Funcionario;
-import com.api.mercado.models.dto.FuncionarioAtualizarDadosDTO;
-import com.api.mercado.models.dto.FuncionarioDadosCadastroDTO;
-import com.api.mercado.models.dto.FuncionarioListagemDTO;
 import com.api.mercado.services.FuncionarioService;
 
 import jakarta.validation.Valid;
