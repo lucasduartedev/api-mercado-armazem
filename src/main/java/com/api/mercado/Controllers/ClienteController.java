@@ -69,6 +69,15 @@ public class ClienteController {
         }
     }
 
+    @PutMapping("/{id}/ativar")
+    @Transactional
+    public ResponseEntity<Void> ativarCliente(@PathVariable Long id) {
+        var cliente = clienteService.buscarClientePorId(id);
+        cliente.ativarPessoa();
+        // ! cliente.ativarCliente();
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
