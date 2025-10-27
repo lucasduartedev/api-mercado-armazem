@@ -1,14 +1,17 @@
 package com.api.mercado.services;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.api.mercado.dto.ProdutoAtualizarDadosDTO;
+import com.api.mercado.exceptions.EntidadeNaoEncontradaException;
 import com.api.mercado.models.Produto;
 import com.api.mercado.repositories.ProdutoRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ProdutoService {
@@ -19,15 +22,11 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public List<Produto> listarProdutos() {
-        return produtoRepository.findAll();
+    public Page<Produto> listarProdutosDisponiveis(Pageable paginacao) {
+        return produtoRepository.findAllByAtivoTrue(paginacao);
     }
 
-    public Produto buscarPorId(Long id) {
-        return produtoRepository.getReferenceById(id);
-    }
-
-    public Optional<Produto> buscarPorId2(Long id) {
+    public Optional<Produto> buscarPorId(Long id) {
         return produtoRepository.findById(id);
     }
 
@@ -35,20 +34,30 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public Produto atualizarProduto(Produto produto) {
-        return produtoRepository.save(produto);
+    // public Produto atualizarProduto(Produto produto) {
+    //     return produtoRepository.save(produto);
+    // }
+
+    @Transactional
+    public Optional<Object> atualizarProduto(ProdutoAtualizarDadosDTO dados) {
+        return produtoRepository.findById(dados.id())
+            .map(produto -> {
+                produto.atualizarInformacoes(dados);
+                return produto;
+            });
     }
 
     public void excluirProduto(Long id) {
-        produtoRepository.deleteById(id);
+        Produto produto = produtoRepository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado."));
+        produto.exclusaoLogica();
     }
 
-    public Page<Produto> listarProdutosDisponiveis(Pageable paginacao) {
-        return produtoRepository.findAllByAtivoTrue(paginacao);
+    @Transactional
+    public void ativarProduto(Long id) {
+        Produto produto = produtoRepository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado."));
+        produto.ativarProduto();
     }
 
-    // public List<Produto> listarProdutosDisponiveisOrdenadosPorNome() {
-    //     return produtoRepository.findAllByDisponibilidadeTrueOrderByNomeAsc();
-    // }
-    
 }

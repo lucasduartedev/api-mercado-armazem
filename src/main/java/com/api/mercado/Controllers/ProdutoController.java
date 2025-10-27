@@ -45,44 +45,53 @@ public class ProdutoController {
 
     @GetMapping
     public ResponseEntity<Page<ProdutoListagemDTO>> listarTodosProdutos(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
-        Page<Produto> produtos = produtoService.listarProdutosDisponiveis(paginacao);
-        Page<ProdutoListagemDTO> dados = produtos.map(ProdutoListagemDTO::new);
-        return ResponseEntity.ok(dados);
+        try {
+            Page<Produto> produtos = produtoService.listarProdutosDisponiveis(paginacao);
+            Page<ProdutoListagemDTO> dados = produtos.map(ProdutoListagemDTO::new);
+            return ResponseEntity.ok(dados);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
     
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Long id) {
-        Optional<Produto> produto = produtoService.buscarPorId2(id);
+
+        Optional<Produto> produto = produtoService.buscarPorId(id);
         return produto.map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.notFound().build());
+
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<Void> atualizarProduto(@RequestBody @Valid ProdutoAtualizarDadosDTO dados) {
-        var produto = produtoService.buscarPorId(dados.id());
+    public ResponseEntity<?> atualizarProduto(@RequestBody @Valid ProdutoAtualizarDadosDTO dados) {
+        return produtoService.atualizarProduto(dados)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/ativar")
+    @Transactional
+    public ResponseEntity<Void> ativarProduto(@PathVariable Long id) {
         try {
-            produto.atualizarInformacoes(dados);
+            produtoService.ativarProduto(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/{id}/ativar")
-    @Transactional
-    public ResponseEntity<Void> ativarProduto(@PathVariable Long id) {
-        var produto = produtoService.buscarPorId(id);
-        produto.ativarProduto();
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> excluirProduto(@PathVariable Long id) {
-        var produto = produtoService.buscarPorId(id);
-        produto.exclusaoLogica();
-        return ResponseEntity.noContent().build();
+
+        try {
+            produtoService.excluirProduto(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
