@@ -45,44 +45,50 @@ public class ClienteController {
 
     @GetMapping
     public ResponseEntity<Page<ClienteListagemDTO>> listarClientesAtvios(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
-        Page<Cliente> clientes = clienteService.listarClientesAtivos(paginacao);
-        Page<ClienteListagemDTO> dados = clientes.map(ClienteListagemDTO::new);
-        return ResponseEntity.ok(dados);
+        try {
+            Page<Cliente> clientes = clienteService.listarClientesAtivos(paginacao);
+            Page<ClienteListagemDTO> dados = clientes.map(ClienteListagemDTO::new);
+            return ResponseEntity.ok(dados);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
-        Optional<Cliente> cliente = clienteService.buscarClientePorId2(id);
+        Optional<Cliente> cliente = clienteService.buscarClientePorId(id);
         return cliente.map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<Void> atualizarCliente(@RequestBody @Valid ClienteAtualizarDadosDTO dados) {
-        var cliente = clienteService.buscarClientePorId(dados.id());
-        try {
-            cliente.atualizarInformacoes(dados);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> atualizarCliente(@RequestBody @Valid ClienteAtualizarDadosDTO dados) {
+        return clienteService.atualizarCliente(dados)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/ativar")
     @Transactional
     public ResponseEntity<Void> ativarCliente(@PathVariable Long id) {
-        var cliente = clienteService.buscarClientePorId(id);
-        cliente.ativarCliente();
-        return ResponseEntity.ok().build();
+        try {
+            clienteService.ativarCliente(id);
+            return ResponseEntity.ok().build();            
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
-        var cliente = clienteService.buscarClientePorId(id);
-        cliente.exclusaoLogica();
-        return ResponseEntity.noContent().build();
+        try {
+            clienteService.excluirCliente(id);
+            return ResponseEntity.ok().build();            
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     
 }

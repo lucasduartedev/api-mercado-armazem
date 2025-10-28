@@ -6,8 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.api.mercado.dto.ClienteAtualizarDadosDTO;
+import com.api.mercado.exceptions.EntidadeNaoEncontradaException;
 import com.api.mercado.models.Cliente;
 import com.api.mercado.repositories.ClienteRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ClienteService {
@@ -26,16 +30,29 @@ public class ClienteService {
         return clienteRepository.findAllByAtivoTrue(pageable);
     }
 
-    public Cliente buscarClientePorId(Long id) {
-        return clienteRepository.getReferenceById(id);
-    }
-
-    public Optional<Cliente> buscarClientePorId2(Long id) {
+    public Optional<Cliente> buscarClientePorId(Long id) {
         return clienteRepository.findById(id);
     }
 
-    public Cliente atualizarCliente(Cliente cliente) {
-        return clienteRepository.save(cliente);
+    @Transactional
+    public Optional<Object> atualizarCliente(ClienteAtualizarDadosDTO dados) {
+        return clienteRepository.findById(dados.id())
+            .map(cliente -> {
+                cliente.atualizarInformacoes(dados);
+                return cliente;
+            });
+    }
+
+    public void excluirCliente(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado"));
+        cliente.exclusaoLogica();
+    }
+
+    public void ativarCliente(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado"));
+        cliente.ativarCliente();
     }
     
 }
