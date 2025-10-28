@@ -45,44 +45,50 @@ public class FuncionarioController {
 
     @GetMapping
     public ResponseEntity<Page<FuncionarioListagemDTO>> listarFuncionariosAtivos(@PageableDefault(size = 10, sort = "nome") Pageable paginacao) {
-        Page<Funcionario> funcionario = funcionarioService.listarFuncionariosAtivos(paginacao);
-        Page<FuncionarioListagemDTO> dados = funcionario.map(FuncionarioListagemDTO::new);
-        return ResponseEntity.ok(dados);
+        try {
+            Page<Funcionario> funcionario = funcionarioService.listarFuncionariosAtivos(paginacao);
+            Page<FuncionarioListagemDTO> dados = funcionario.map(FuncionarioListagemDTO::new);
+            return ResponseEntity.ok(dados);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Funcionario> buscarFuncionarioPorId(@PathVariable Long id) {
-        Optional<Funcionario> funcionario = funcionarioService.buscarFuncionarioPorId2(id);
+        Optional<Funcionario> funcionario = funcionarioService.buscarFuncionarioPorId(id);
         return funcionario.map(ResponseEntity::ok)
                         .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<Void> atualizarFuncionario(@RequestBody @Valid FuncionarioAtualizarDadosDTO dados) {
-        var funcionario = funcionarioService.buscarFuncionarioPorId(dados.id());
+    public ResponseEntity<?> atualizarFuncionario(@RequestBody @Valid FuncionarioAtualizarDadosDTO dados) {
+        return funcionarioService.atualizFuncionario(dados)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/ativar")
+    @Transactional
+    public ResponseEntity<Void> ativarFuncionario(@PathVariable Long id) {
         try {
-            funcionario.atualizarInformacoes(dados);
+            funcionarioService.ativarFuncionario(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/{id}/ativar")
-    @Transactional
-    public ResponseEntity<Void> ativarFuncionario(@PathVariable Long id) {
-        var funcionario = funcionarioService.buscarFuncionarioPorId(id);
-        funcionario.ativarFuncionario();
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> excluirFuncionario(@PathVariable Long id) {
-        var funcionario = funcionarioService.buscarFuncionarioPorId(id);
-        funcionario.exclusaoLogica();
-        return ResponseEntity.ok().build();
+        try {
+            funcionarioService.excluirFuncionario(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     
 }

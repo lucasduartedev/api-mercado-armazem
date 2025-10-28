@@ -6,8 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.api.mercado.dto.FuncionarioAtualizarDadosDTO;
+import com.api.mercado.exceptions.EntidadeNaoEncontradaException;
 import com.api.mercado.models.Funcionario;
 import com.api.mercado.repositories.FuncionarioRepostiroty;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class FuncionarioService {
@@ -26,16 +30,30 @@ public class FuncionarioService {
         return funcionarioRepostiroty.findAllByAtivoTrue(paginacao);
     }
 
-    public Funcionario buscarFuncionarioPorId(Long id) {
-        return funcionarioRepostiroty.getReferenceById(id);
-    }
-
-    public Optional<Funcionario> buscarFuncionarioPorId2(Long id) {
+    public Optional<Funcionario> buscarFuncionarioPorId(Long id) {
         return funcionarioRepostiroty.findById(id);
     }
 
-    public Funcionario atualizFuncionario(Funcionario funcionario) {
-        return funcionarioRepostiroty.save(funcionario);
+    @Transactional
+    public Optional<Funcionario> atualizFuncionario(FuncionarioAtualizarDadosDTO dados) {
+        return funcionarioRepostiroty.findById(dados.id())
+            .map(funcionario -> {
+                funcionario.atualizarInformacoes(dados);
+                return funcionario;
+            });
     }
-    
+
+    public void excluirFuncionario(Long id) {
+        Funcionario funcionario = funcionarioRepostiroty.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Funcionario não encontrado"));
+        funcionario.exclusaoLogica();
+    }
+
+    @Transactional
+    public void ativarFuncionario(Long id) {
+        Funcionario funcionario = funcionarioRepostiroty.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Funcionario não encontrado"));
+        funcionario.ativarFuncionario();
+    }
+
 }
