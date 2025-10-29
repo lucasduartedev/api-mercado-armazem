@@ -12,7 +12,8 @@ public record FuncionarioAtualizarDadosDTO(
     String logradouro,
     String numero,
     String telefone,
-    String email
+    String email,
+    String departamento
 ) {
 
 }

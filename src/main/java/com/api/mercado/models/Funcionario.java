@@ -21,7 +21,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Funcionario extends Pessoa{
 
+    @Column(name = "salario")
     private Double salario;
+
+    @Column(name = "departamento")
+    private String departamento;
 
     @Column(name = "data_admissao")
     private LocalDateTime dataAdmissao = LocalDateTime.now();
@@ -41,6 +45,7 @@ public class Funcionario extends Pessoa{
             dados.email()
         );
         this.salario = dados.salario();
+        this.departamento = dados.departamento();
     }
 
     public void atualizarInformacoes(FuncionarioAtualizarDadosDTO dados) {
@@ -67,6 +72,9 @@ public class Funcionario extends Pessoa{
         }
         if(dados.email() != null) {
             this.getContato().setEmail(dados.email());
+        }
+        if(dados.departamento() != null) {
+            this.departamento = dados.departamento();
         }
     }
 
